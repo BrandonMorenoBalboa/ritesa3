@@ -40,4 +40,6 @@
 <script src="./js/bootstrap.min.js"></script>
 <script src="./js/popper.min.js"></script>
 <!-- Funciones -->
+<script src="./js/regiones.js"></script>
 <script src="./js/scripts.js"></script>
+<script src="./js/validarRut.js"></script>

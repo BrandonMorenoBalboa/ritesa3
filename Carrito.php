@@ -44,7 +44,7 @@
 
         }
     ?>
-
+    <br><br><br><br>
     <?php include('./view/footer.php'); ?>
 </body>
 </html>

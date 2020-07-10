@@ -13,7 +13,7 @@
             // Validar campos formulario
             if($_POST['email'] != "" && $_POST['clave'] != "") {
                 $email = $conn->real_escape_string($_POST['email']);
-                $clave = $conn->real_escape_string($_POST['clave']);
+                $clave = md5($conn->real_escape_string($_POST['clave']));
                 // Conexion a la base de datos
                 include('./conexion/conexion.php');
                 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -23,9 +23,11 @@
                 } 
                 else
                 {
+
                     $sql = "SELECT id, nombre, apellido, rut, fono, email, clave, region, comuna, direccion
                     FROM cliente
                     WHERE (email = '" . $email . "') AND (clave = '" . $clave . "') AND (estado = 1)";
+                    echo $sql;
                     $result = $conn->query($sql);
                     $row = $result->fetch_assoc();
                     if($row > 0) {

@@ -24,14 +24,14 @@
             //$mail->SMTPDebug = 3;                               // Enable verbose debug output
 
             $mail->isSMTP();                                      // Set mailer to use SMTP
-            $mail->Host = 'mail.ritesa.cl';                       // Servidor
+            $mail->Host = '';                       // Servidor
             $mail->SMTPAuth = true;                               // Enable SMTP authentication
-            $mail->Username = 'ventas@ritesa.cl';           // SMTP username
-            $mail->Password = 'ritesa2018';                       // SMTP password
+            $mail->Username = '';           // SMTP username
+            $mail->Password = '';                       // SMTP password
             $mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
             $mail->Port = 465;                                    // TCP port to connect to
-            $mail->setFrom('ventas@ritesa.cl', $nombre);
-            $mail->addAddress('ventas@ritesa.cl', 'ventas@ritesa.cl');
+            $mail->setFrom('', $nombre);
+            $mail->addAddress('', '');
             $mail->Subject = $asunto;
             $mail->Body    = "Nombre: $nombre \n". // Nombre del usuario
                             "Telefono: $telefono \n".

@@ -15,7 +15,7 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Categorias
+                Productos
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <?php
@@ -24,9 +24,7 @@
                         // Verificamos la conexion
                         if ($conn->connect_error) {
                             die("Connection failed: " . $conn->connect_error);
-                        } 
-                        else
-                        {
+                        } else{
                             // Realizamos la consulta sql
                             $query="SELECT url, nombre FROM familia WHERE estado = 1";
                             // Ejecutamos la consulta
@@ -52,24 +50,49 @@
                 </div>
             </li>
         </ul>
-        
-        <div class="btn-group dropleft">
-            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" id="mostrar-carrito" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
-                <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <a href="./Carrito.php" class="btn btn-secondary text-white">Carrito</a>
-            <div class="dropdown-menu" aria-labelledby="mostrar-carrito">
-                <table class="table table-responsive" id="carrito-compras" style="font-size: 10px">
-                    <tr>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>Total</th>
-                    </tr>
-                </table>
+        <div class="form-inline my-2 my-lg-0 mr-4">
+            <div class="btn-group">
+                <a href="Carrito.php" class="btn btn-outline-info"><i class="fas fa-cart-plus"></i> () </a>
+                <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                    <!--TABLA-->
+                    <table class="table table-responsive" id="carrito-compras" style="font-size: 10px">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
+        <!--<div class="btn-group">
+            <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" id="mostrar-carrito" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <a href="./Carrito.php" class="btn btn-outline-danger text-white"><i class="fas fa-cart-plus"></i> ( )</a>
+
+            <div class="dropdown-menu" aria-labelledby="mostrar-carrito">
+                <table class="table table-responsive" id="carrito-compras" style="font-size: 10px">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>-->
+
         <?php 
             if($_SESSION['id'] == "" && $_SESSION['nombre'] == "") {
         ?>
@@ -80,11 +103,22 @@
         <?php 
             } else {
         ?>
-            <div class="form-inline my-2 my-lg-0">
-                <label class="pl-2 pr-2 text-white" for="">Bienvenido <?php echo $_SESSION['nombre']; ?></label>
-                <a href="" class="btn btn-outline-warning my-2 my-sm-0 ml-1 mr-1">Opciones</a>
-                <a href="./CerrarSesion.php" class="btn btn-outline-danger my-2 my-sm-0 ml-1 mr-1">Cerrar</a>
-            </div>
+            <ul class="navbar-nav">
+                <div class="form-inline my-2 my-lg-0 mr-5">
+                    <label class="pl-2 pr-2 text-white" for="">Bienvenido <?php echo $_SESSION['nombre']; ?></label>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Opciones
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="EditarInformacion.php">Mi informacion</a>
+                            <a class="dropdown-item" href="MisPedidos.php">Mis pedidos</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="./CerrarSesion.php">Cerrar sesión</a>
+                        </div>
+                    </li>
+                </div>
+            </ul>
         <?php 
             }
         ?>

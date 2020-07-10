@@ -43,6 +43,7 @@ function cargarEventListener() {
     }
     if(tabla) {
         tabla.addEventListener('click', eliminaProductoCarrito)
+        tabla.addEventListener('click', obtenerInformacionTabla)
     }
 }
 cargarEventListener()
@@ -107,59 +108,88 @@ function obtenerInformacion(e) {
         cantidad: parseInt(e.target.previousElementSibling.lastElementChild.firstElementChild.firstElementChild.nextElementSibling.nextElementSibling.value),
         factor: e.target.previousElementSibling.firstElementChild.nextElementSibling.firstElementChild.firstElementChild.value
     }
-    //console.log(infoProducto.factor)
+    // Agregar productos almacenados en local storage
     agregarProductosAlCarrito(infoProducto)
 
 }
 // Agregar productos al carrito
 function agregarProductosAlCarrito(producto) {
-    const carrito = document.createElement('tr')
-    carrito.innerHTML = `
-    <td>
-        <img src="${producto.imagen}" width="15">
-    </td>
-    <td style="font-size: 10px">
-        ${producto.nombre}
-    </td>
-
-    <td style="font-size: 10px">
-        ${producto.precio}
-    </td>
-    <td>
-        ${producto.cantidad}
-    </td style="font-size: 10px">
-    
-    <td style="font-size: 10px">
-        ${producto.precio * producto.cantidad}
-    </td>
-    <td>
-        <a href="#" class="borrar-producto" data-id="${producto.id}">X</a>
-    </td>
-
-    `
-    // Agregar boton para quitar los productos
-    document.getElementById('carrito-compras').appendChild(carrito)
-    // Llamamos funcion para guardar productos
+    // Guardamos producto en LocalStorage
     guardarProductosLocalStorage(producto)
+    // Obtenemos la tabla con los datos del carrito
+    let datosAnteriores = Array.from( document.querySelectorAll('#carrito-compras tr'))
+    // Borramos todas las filas de la tabla existen
+    if(datosAnteriores) {
+        datosAnteriores.forEach((el) => {
+            el.remove()
+        })
+    }
+    // Obtenemos todos los datos de los productos, incluyendo el ultimo producto agregado (LINE: 119)
+    let productosLS = obtenerProductosLocalStorage()
+    // Crear estructura de la tabla
+    const carrito = document.createElement('tbody')
+    let td = ''
+    td += `
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    `
+    // Recorrer el objeto y crear las filas con los datos
+    productosLS.forEach(producto => {
+        td += `
+        <tr>
+            <td>
+                <img src="${producto.imagen}" width="15">
+            </td>
+            <td style="font-size: 10px">
+                ${producto.nombre}
+            </td>
+
+            <td style="font-size: 10px">
+                ${producto.precio}
+            </td>
+            <td>
+                ${producto.cantidad}
+            </td style="font-size: 10px">
+            
+            <td style="font-size: 10px">
+                ${producto.precio * producto.cantidad}
+            </td>
+            <td>
+                <a href="#" class="borrar-producto" data-id="${producto.id}">X</a>
+            </td>
+        </tr>
+        
+        `
+    })
+    carrito.innerHTML = td
+    // Agregar plantilla al html
+    document.getElementById('carrito-compras').appendChild(carrito)
+
 }
 
 // Guardamos los productos en LocalStorage
 function guardarProductosLocalStorage(producto) {
-    let productos 
+    let productos,
+    productoExistente = false 
     productos = obtenerProductosLocalStorage()
-    /**
-     * Verificar si se esta agregando el mismo producto
-     */
-
+    // Verificar si se esta agregando el mismo producto
     productos.forEach((el) => {
         if(el.id === producto.id) {
-            console.log('Agrego el mismo producto')
-            // Determinar reemplazar el valor existente
-            
-        }
+            el.cantidad = parseInt(el.cantidad) + parseInt(producto.cantidad)
+            productoExistente = true
+        } 
     })
-
-    productos.push(producto)
+    // Si el producto no existe en el carrito
+    if (productoExistente === false) {
+        productos.push(producto)
+    }
     localStorage.setItem('productos', JSON.stringify(productos))
 }
 // Obtenemos productos del local storage
@@ -271,7 +301,6 @@ function mensajeAlerta(mensaje) {
 const tablaProductos = document.getElementById('carrito-productos')
 // Verificamos que el elemento exista
 if(tablaProductos) {
-    console.log('tabla productos existe')
     document.addEventListener("DOMContentLoaded", cargarProductos )
 }
 
@@ -303,9 +332,9 @@ function cargarProductos() {
            <td><img src="${producto.imagen}" width="50px"></td>
             <td>${producto.id}</td>
             <td>${producto.nombre}</td>
-            <td>${producto.precio}</td>
+            <td><span class="precio-producto">${producto.precio}</span></td>
             <td>
-                <input type="text" value="${producto.factor}">
+                <input type="hidden" class="factor-producto" data-id="${producto.factor}" value="${producto.factor}">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <button id="" class="btn btn-cantidad btn-outline-warning disminuir" type="button">-</button>
@@ -315,7 +344,7 @@ function cargarProductos() {
                         <button id="" class="btn btn-cantidad btn-outline-primary aumentar" type="button">+</button>
                     </div>
                 </div>
-            <td>${producto.precio * producto.cantidad}</td>
+            <td><span class="total-producto">${producto.precio * producto.cantidad}</span></td>
             <td><a class="btn btn-danger borrar-producto" data-id="${producto.id}">X</a></td>
         </tr>`
         suma = suma + (producto.precio * producto.cantidad)
@@ -336,4 +365,40 @@ function cargarProductos() {
  * Funcion para modificar cantidades de los productos
  * 
  */
+
+function obtenerInformacionTabla(e) {
+    if(e.target.classList.contains('btn-cantidad')) {
+        let id = e.target.parentElement.parentElement.parentElement.parentElement.firstElementChild.nextElementSibling.textContent
+        let factor = e.target.parentElement.parentElement.parentElement.firstElementChild.getAttribute('data-id')
+        let cantidad = e.target.parentElement.parentElement.firstElementChild.nextElementSibling
+        let total = e.target.parentElement.parentElement.parentElement.nextElementSibling.firstElementChild
+        let precio = e.target.parentElement.parentElement.parentElement.previousElementSibling.firstElementChild
+        let totalPago = e.target.parentElement.parentElement.parentElement.parentElement.parentElement.lastElementChild.firstElementChild.nextElementSibling
+        let pago = 0
+        let iva = e.target.parentElement.parentElement.parentElement.parentElement.parentElement.lastElementChild.previousElementSibling.firstElementChild.nextElementSibling
+        if(e.target.classList.contains('aumentar')) {
+            aumentarCantidad(cantidad, factor)
+            total.textContent = total.textContent = parseInt(cantidad.value) * parseInt(precio.textContent)
+        } else if(e.target.classList.contains('disminuir')) {
+            disminuirCantidad(cantidad, factor)
+            total.textContent = parseInt(cantidad.value) * parseInt(precio.textContent)
+        }
+        /**
+         * Actualizar LocalStorage
+         */
+        productos = obtenerProductosLocalStorage()
+        productos.forEach((el) => {
+            if(el.id === id) {
+                el.cantidad = cantidad.value
+            }
+            pago = parseInt(pago) + (parseInt(el.precio) * parseInt(el.cantidad))
+        })
+        // Calcular pago
+        totalPago.textContent = Math.ceil( pago * 1.19 ) 
+        // Calcular iva
+        iva.textContent = Math.ceil( totalPago.textContent - pago )
+        localStorage.setItem('productos', JSON.stringify(productos))
+        document.getElementById('carrito-php').value = JSON.stringify( productos )
+    }
+}
 
